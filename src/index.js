@@ -15,7 +15,7 @@ class Board extends React.Component {
     return (
       <div>
       {
-        squares.forEach((value1, index1) => value1.forEach((value2, index2) => {
+        squares.map((value1, index1) => value1.map((value2, index2) => {
           return <Square value={squares[index1][index2]} />
         }))
       }
@@ -26,7 +26,6 @@ class Board extends React.Component {
 
 class Square extends React.Component {
   render() {
-    console.log("rendering square");
     return (
       <button className="square">
         {this.props.value}
