@@ -20,7 +20,7 @@ class Board extends React.Component {
             <div key={index1} className="row">
             {
               value1.map((value2, index2) => {
-                return <Square key={"" + index1 + index2} value={squares[index1][index2]} />
+                return <Square key={"" + index1 + index2} value={squares[index1][index2]} onChange={(e) => this.handleChange(index1, index2, e)}/>
               })
             }
             </div>
@@ -29,6 +29,19 @@ class Board extends React.Component {
       }
       </div>
     );
+  }
+
+  handleChange (i, j, event) {
+    const {squares} = this.state;
+    const newState = new Array(9).fill(0).map(() => new Array(9).fill(0))
+    squares.forEach((elem1, ind1) => elem1.forEach((elem2, ind2) => {
+      if(ind1 === i && ind2 === j) {
+        newState[ind1][ind2] = parseInt(event.target.value);
+      } else {
+        newState[ind1][ind2] = elem2;
+      }
+    }))
+    this.setState({squares: newState});
   }
 }
 
@@ -43,16 +56,9 @@ class Square extends React.Component {
       <input
         className="square"
         type="number"
-        value={this.props.value !== 0 ? this.props.value : ""}
-        onChange={this.handleChange}
+        onChange={this.props.onChange}
       />
     );
-  }
-
-  handleChange() {
-    if(this.state.locked !== false) {
-      //TODO: Update state in parent
-    }
   }
 }
 
