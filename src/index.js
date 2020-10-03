@@ -5,13 +5,23 @@ import './index.css';
 class Board extends React.Component {
   constructor(props) {
     super(props);
+
+    var lockedArr = props.squares.map((el1, ind1) => el1.map((el2, ind2) => {
+      if(props.squares[ind1][ind2] === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }))
+
     this.state = {
-      squares: new Array(9).fill(0).map(() => new Array(9).fill(0))
+      squares: props.squares,
+      locked: lockedArr
     }
   }
 
   render() {
-    const {squares} = this.state;
+    const {squares, locked} = this.state;
     return (
       <div>
       {
@@ -20,7 +30,12 @@ class Board extends React.Component {
             <div key={index1} className="row">
             {
               value1.map((value2, index2) => {
-                return <Square key={"" + index1 + index2} value={squares[index1][index2]} onChange={(e) => this.handleChange(index1, index2, e)}/>
+                return <Square
+                  key={"" + index1 + index2}
+                  value={squares[index1][index2].toString()}
+                  onChange={(e) => this.handleChange(index1, index2, e)}
+                  locked={locked[index1][index2]}
+                />
               })
             }
             </div>
@@ -46,23 +61,29 @@ class Board extends React.Component {
 }
 
 class Square extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {locked: false};
-  }
-
   render() {
     return (
       <input
         className="square"
-        type="number"
         onChange={this.props.onChange}
+        color={(this.props.locked === true) ? "gray" : "white"}
+        value={this.props.value === "0" ? "" : this.props.value}
       />
     );
   }
 }
 
 ReactDOM.render(
-  <Board />,
+  <Board squares={ [[ 0, 0, 4,   0, 0, 0,   0, 6, 7 ],
+                    [ 3, 0, 0,   4, 7, 0,   0, 0, 5 ],
+                    [ 1, 5, 0,   8, 2, 0,   0, 0, 3 ],
+
+                    [ 0, 0, 6,   0, 0, 0,   0, 3, 1 ],
+                    [ 8, 0, 2,   1, 0, 5,   6, 0, 4 ],
+                    [ 4, 1, 0,   0, 0, 0,   9, 0, 0 ],
+
+                    [ 7, 0, 0,   0, 8, 0,   0, 4, 6 ],
+                    [ 6, 0, 0,   0, 1, 2,   0, 0, 0 ],
+                    [ 9, 3, 0,   0, 0, 0,   7, 1, 0 ]] }/>,
   document.getElementById('root')
 );

@@ -1,6 +1,16 @@
+.row {
+  display: table;
+}
+
 .square {
   height: 50px;
   width: 50px;
-  margin: 0;
-  appearance: none;
+  font-size: 42px;
+  text-align: center;
+  margin: 1px;
+  border: hidden;
+}
+
+body {
+  background-color: black;
 }
