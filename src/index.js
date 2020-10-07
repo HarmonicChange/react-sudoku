@@ -8,41 +8,42 @@ class Board extends React.Component {
 
     var lockedArr = props.squares.map((el1, ind1) => el1.map((el2, ind2) => {
       if(props.squares[ind1][ind2] === 0) {
-        return true;
-      } else {
         return false;
+      } else {
+        return true;
       }
     }))
 
     this.state = {
       squares: props.squares,
       locked: lockedArr
+      //TODO: Add an "answers" array here?
     }
   }
 
   render() {
     const {squares, locked} = this.state;
     return (
-      <div>
+      <table><tbody>
       {
         squares.map((value1, index1) => {
           return (
-            <div key={index1} className="row">
+            <tr key={index1} className="row">
             {
               value1.map((value2, index2) => {
                 return <Square
                   key={"" + index1 + index2}
-                  value={squares[index1][index2].toString()}
+                  value={squares[index1][index2]}
                   onChange={(e) => this.handleChange(index1, index2, e)}
                   locked={locked[index1][index2]}
                 />
               })
             }
-            </div>
+            </tr>
           );
         })
       }
-      </div>
+      </tbody></table>
     );
   }
 
@@ -51,7 +52,11 @@ class Board extends React.Component {
     const newState = new Array(9).fill(0).map(() => new Array(9).fill(0))
     squares.forEach((elem1, ind1) => elem1.forEach((elem2, ind2) => {
       if(ind1 === i && ind2 === j) {
-        newState[ind1][ind2] = parseInt(event.target.value);
+        if(event.target.value.length === 0) {
+          newState[ind1][ind2] = 0;
+        } else {
+          newState[ind1][ind2] = parseInt(event.target.value);
+        }
       } else {
         newState[ind1][ind2] = elem2;
       }
@@ -63,12 +68,14 @@ class Board extends React.Component {
 class Square extends React.Component {
   render() {
     return (
-      <input
-        className="square"
-        onChange={this.props.onChange}
-        color={(this.props.locked === true) ? "gray" : "white"}
-        value={this.props.value === "0" ? "" : this.props.value}
-      />
+      <td>
+        <input
+          className="square"
+          onChange={this.props.onChange}
+          style={{color: (this.props.locked) ? "gray" : "black"}}
+          value={this.props.value === 0 ? "" : this.props.value}
+          />
+      </td>
     );
   }
 }
