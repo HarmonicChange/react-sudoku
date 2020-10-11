@@ -16,14 +16,15 @@ class Board extends React.Component {
 
     this.state = {
       squares: props.squares,
-      locked: lockedArr
-      //TODO: Add an "answers" array here?
+      locked: lockedArr,
+      isValid: new Array(9).fill(true).map(() => new Array(9).fill(true))
     }
   }
 
   render() {
-    const {squares, locked} = this.state;
+    const {squares, locked, isValid} = this.state;
     return (
+      <React.Fragment>
       <table><tbody>
       {
         squares.map((value1, index1) => {
@@ -36,6 +37,7 @@ class Board extends React.Component {
                   value={squares[index1][index2]}
                   onChange={(e) => this.handleChange(index1, index2, e)}
                   locked={locked[index1][index2]}
+                  isValid={isValid[index1][index2]}
                 />
               })
             }
@@ -44,6 +46,8 @@ class Board extends React.Component {
         })
       }
       </tbody></table>
+      <div className="win-text"></div>
+      </React.Fragment>
     );
   }
 
@@ -61,18 +65,25 @@ class Board extends React.Component {
         newState[ind1][ind2] = elem2;
       }
     }))
-    this.setState({squares: newState});
+
+    this.setState({
+      squares: newState,
+      isValid: this.isValidSolution(newState)
+    });
+  }
+
+  isValidSolution(arr) {
+    //TODO: Write function to look for invalid state of the Sudoku board
   }
 }
 
 class Square extends React.Component {
   render() {
     return (
-      <td>
+      <td style={{backgroundColor: (this.props.locked) ? "lightgray" : "white"}}>
         <input
           className="square"
           onChange={this.props.onChange}
-          style={{color: (this.props.locked) ? "gray" : "black"}}
           value={this.props.value === 0 ? "" : this.props.value}
           />
       </td>
