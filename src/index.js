@@ -17,7 +17,7 @@ class Board extends React.Component {
     this.state = {
       squares: props.squares,
       locked: lockedArr,
-      isValid: new Array(9).fill(true).map(() => new Array(9).fill(true))
+      isValid: new Array(9).fill(true).map(() => new Array(9).fill(true)) //assume starter input always valid
     }
   }
 
@@ -52,35 +52,98 @@ class Board extends React.Component {
   }
 
   handleChange (i, j, event) {
-    const {squares} = this.state;
+    const {squares, isValid} = this.state;
     const newState = new Array(9).fill(0).map(() => new Array(9).fill(0))
+    const newIsValid = isValid.map((el) => el.map((el2) => el2)); //deep copy isValid
+    const myUpdatedValue = parseInt(event.target.value);
+    var foundDuplicate = false;
+
+    //take care of newState
     squares.forEach((elem1, ind1) => elem1.forEach((elem2, ind2) => {
       if(ind1 === i && ind2 === j) {
-        if(event.target.value.length === 0) {
+        if(myUpdatedValue.length === 0) {
           newState[ind1][ind2] = 0;
         } else {
-          newState[ind1][ind2] = parseInt(event.target.value);
+          newState[ind1][ind2] = myUpdatedValue;
         }
       } else {
         newState[ind1][ind2] = elem2;
       }
     }))
 
+    //On a change, we only need to check whether it causes its row, col, and grid to be invalid
+    for(let row = 0; row < 8; row++) { //check row
+      if(row !== i && squares[row][j] === myUpdatedValue) { //found duplicate
+        newIsValid[i][j] = false;
+        newIsValid[row][j] = false;
+        foundDuplicate = true;
+      }
+    }
+
+    for(let col = 0; col < 8; col++) { //check column
+      if(col !== j && squares[i][col] === myUpdatedValue) {
+        newIsValid[i][j] = false;
+        newIsValid[i][col] = false;
+        foundDuplicate = true;
+      }
+    }
+
+    //check grid
+    var startX;
+    var startY;
+
+    if (i >= 0 && i <= 2) {
+      startX = 0;
+    } else if (i >= 3 && i <= 5) {
+      startX = 3;
+    } else if (i >= 6 && i <= 8) {
+      startX = 6;
+    }
+
+    if (j >= 0 && j <= 2) {
+      startY = 0;
+    } else if (j >= 3 && j<= 5) {
+      startY = 3;
+    } else if (j >= 6 && j <= 8) {
+      startY = 6;
+    }
+
+    for(let gridX = startX; gridX <= startX + 2; gridX++) {
+      for(let gridY = startY; gridY <= startY + 2; gridY++) {
+        if(i !== gridX && j !== gridY && squares[gridX][gridY] === myUpdatedValue) {
+          newIsValid[i][j] = false;
+          newIsValid[gridX][gridY] = false;
+          foundDuplicate = true;
+        }
+      }
+    }
+
+    //If there are no duplicates, turn the row/col/grid validity to true
+    if(squares[i][j] === false && foundDuplicate === false) {
+      for(let row = 0; row < 8; row++) {
+        newIsValid[row][j] = true;
+      }
+      for(let col = 0; col < 8; col++) {
+        newIsValid[i][col] = true;
+      }
+      for(let gridX = startX; startX <= startX + 2; startX++) {
+        for(let gridY = startY; startY <= startY + 2; startY++) {
+          newIsValid[gridX][gridY] = true;
+        }
+      }
+    }
+
     this.setState({
       squares: newState,
-      isValid: this.isValidSolution(newState)
+      isValid: newIsValid
     });
-  }
-
-  isValidSolution(arr) {
-    //TODO: Write function to look for invalid state of the Sudoku board
   }
 }
 
 class Square extends React.Component {
   render() {
     return (
-      <td style={{backgroundColor: (this.props.locked) ? "lightgray" : "white"}}>
+      <td style={{backgroundColor: (this.props.locked) ? "lightgray" : (this.props.isValid) ? "white" : "red"}}>
         <input
           className="square"
           onChange={this.props.onChange}
