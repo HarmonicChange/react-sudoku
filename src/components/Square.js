@@ -1,16 +1,21 @@
-import React from 'react';
+import React from 'react'
 
-export default class Square extends React.Component {
-    render() {
-      return (
-        <td style={{backgroundColor: (this.props.locked) ? "lightgray" : (this.props.isValid) ? "white" : "red"}}>
-          <input
-            className="square"
-            onChange={this.props.onChange}
-            value={this.props.value === 0 ? "" : this.props.value}
-            readOnly={this.props.locked}
-            />
-        </td>
-      );
-    }
-  }
+function Square(props) {
+    //props:
+    //  locked - boolean that indicates whether this is a given number in the puzzle
+    //  onChange - function that handles when the number changes
+    //  value - number that indicates the number filled in, 0 being blank
+    
+    return (
+      <td style={{backgroundColor: (props.locked) ? "lightgray" : "white"}}>
+      <input
+        className="square"
+        onChange={props.onChange}
+        value={props.value === 0 ? "" : props.value}
+        readOnly={props.locked}
+        />
+      </td>
+    );
+}
+
+export default Square;
