@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Square from './Square'
 
 function Board(props) {
@@ -17,14 +17,27 @@ function Board(props) {
 
     const [puzzle, setPuzzle] = useState(props.squares)
     const [locked, setLocked] = useState(lockedArr)
+    const [seconds, setSeconds] = useState(0)
+    const [completed, setCompleted] = useState(false)
+
+    useEffect(() => {
+        var myTimer = setInterval(() => {
+            setSeconds(seconds => seconds + 1)
+        }, 1000)
+        return () => clearInterval(myTimer)
+    }, [])
 
     const onChange = (index1, index2) => {
         return (event) => {
-            if (/[1-9]{1}/.test(event.target.value) || event.target.value.length === 0) {
+            if (/^[1-9]{1}$/.test(event.target.value) || event.target.value.length === 0) {
                 var newPuzzle = puzzle.map((el1, i1) => {
                     return el1.map((el2, i2) => {
                         if (index1 === i1 && index2 === i2) {
-                            return event.target.value
+                            if(event.target.value.length !== 0) {
+                                return event.target.value
+                            } else {
+                                return 0
+                            }
                         } else {
                             return el2
                         }
@@ -32,8 +45,18 @@ function Board(props) {
                 })
                 setPuzzle(newPuzzle)
             }
-            //TODO: Add something with checkComplete here. When puzzle is completed, show win text
+
+            //TODO: Check that this works
+            /*
+            if(checkComplete) {
+                setCompleted(true)
+            }*/
         }
+    }
+
+    //Formats seconds into mm:ss string
+    const secondToString = (sec) => {
+        return Math.floor(sec / 60) + ":" + (sec % 60)
     }
 
     const checkComplete = () => {
@@ -68,7 +91,20 @@ function Board(props) {
             }
         }
 
-        //TODO: Check 3x3 squares for duplicates
+        // Check 3x3 squares for duplicates
+        for(var square of [[0,0], [0,3], [0, 6], [3, 0], [3, 3], [3, 6], [6, 0], [6,3], [6, 6]]) {
+            var i = square[0]
+            var j = square[1]
+            var setOfNums = new Set()
+            for(var counti = 0; counti <= 2; counti++) {
+                for(var countj = 0; countj <= 2; countj++) {
+                    setOfNums.add(puzzle[i+counti][j+countj])
+                }
+            }
+            if(setOfNums.size < 9) {
+                return false
+            }
+        }
 
         //Passed all checks
         return true
@@ -76,6 +112,7 @@ function Board(props) {
 
     return (
         <React.Fragment>
+        <div id="timer">{seconds} s</div>
         <table><tbody>
             {
                 puzzle.map((value1, index1) => {
@@ -96,7 +133,7 @@ function Board(props) {
                 })
             }
         </tbody></table>
-        <div className="win-text"></div>
+        <div className="win-text">{completed ? "Congratulations!" : ""}</div>
         </React.Fragment>
     );
 }

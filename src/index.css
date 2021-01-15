@@ -15,6 +15,7 @@ table {
   border-left: 3px solid black;
   border-top: 3px solid black;
   border-collapse: collapse;
+  margin: 0 auto;
 }
 
 td {
@@ -32,4 +33,9 @@ tr:nth-child(3n) {
 tbody {
   border-collapse: collapse;
   border-spacing: 0px;
+}
+
+#timer {
+    text-align: center;
+    font-size: 24px;
 }
