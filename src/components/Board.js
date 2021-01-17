@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Square from './Square'
 
 function Board(props) {
@@ -20,12 +20,20 @@ function Board(props) {
     const [seconds, setSeconds] = useState(0)
     const [completed, setCompleted] = useState(false)
 
+    var myTimer = useRef();
+
     useEffect(() => {
-        var myTimer = setInterval(() => {
+        myTimer.current = setInterval(() => {
             setSeconds(seconds => seconds + 1)
         }, 1000)
         return () => clearInterval(myTimer)
     }, [])
+
+    useEffect(() => {
+        if(completed === true) {
+            clearInterval(myTimer.current)
+        }
+    }, [completed])
 
     const onChange = (index1, index2) => {
         return (event) => {
@@ -46,17 +54,22 @@ function Board(props) {
                 setPuzzle(newPuzzle)
             }
 
-            //TODO: Check that this works
-            /*
             if(checkComplete) {
                 setCompleted(true)
-            }*/
+            }
         }
     }
 
     //Formats seconds into mm:ss string
     const secondToString = (sec) => {
-        return Math.floor(sec / 60) + ":" + (sec % 60)
+        var mm = Math.floor(sec / 60)
+        var ss = sec % 60
+        
+        if(ss < 10) {
+            return mm + ":0" + ss
+        } else {
+            return mm + ":" + ss
+        }
     }
 
     const checkComplete = () => {
@@ -64,6 +77,7 @@ function Board(props) {
         for(var i = 0; i < puzzle.length; i++) {
             for(var j = 0; j < puzzle[i].length; j++) {
                 if(puzzle[i][j] === 0) {
+                    console.log("has 0")
                     return false
                 }
             }
@@ -76,6 +90,7 @@ function Board(props) {
                 setOfNums.add(puzzle[i][j])
             }
             if(setOfNums.size < 9) {
+                console.log("row " + i)
                 return false
             }
         }
@@ -87,6 +102,7 @@ function Board(props) {
                 setOfNums.add(puzzle[j][i])
             }
             if(setOfNums.size < 9) {
+                console.log("col " + i)
                 return false
             }
         }
@@ -102,17 +118,19 @@ function Board(props) {
                 }
             }
             if(setOfNums.size < 9) {
+                console.log("square " + square)
                 return false
             }
         }
 
         //Passed all checks
+        console.log("Completed")
         return true
     }
 
     return (
         <React.Fragment>
-        <div id="timer">{seconds} s</div>
+        <div id="timer">{secondToString(seconds)}</div>
         <table><tbody>
             {
                 puzzle.map((value1, index1) => {

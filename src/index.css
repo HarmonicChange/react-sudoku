@@ -36,6 +36,12 @@ tbody {
 }
 
 #timer {
+    font-family: 'Inconsolata', monospace;
+    text-align: center;
+    font-size: 24px;
+}
+
+.win-text {
     text-align: center;
     font-size: 24px;
 }
