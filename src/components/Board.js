@@ -3,6 +3,7 @@ import Square from './Square'
 
 function Board(props) {
     //props:
+    //  puzzleId - a number specifying the ID of the puzzle
     //  squares - a 2d array of numbers representing the starting state of the puzzle
 
     var lockedArr = props.squares.map((value1) => {
@@ -19,7 +20,8 @@ function Board(props) {
     const [locked, setLocked] = useState(lockedArr)
     const [seconds, setSeconds] = useState(0)
     const [completed, setCompleted] = useState(false)
-
+    const apiEndpoint = "http://localhost:3000"
+    
     var myTimer = useRef();
 
     useEffect(() => {
@@ -32,6 +34,13 @@ function Board(props) {
     useEffect(() => {
         if(completed === true) {
             clearInterval(myTimer.current)
+            const requestOptions = {
+                method: 'POST',
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify({ puzzle_id: props.puzzleId, time: seconds})
+            };
+            console.log(requestOptions.body)
+            fetch(apiEndpoint, requestOptions)
         }
     }, [completed])
 

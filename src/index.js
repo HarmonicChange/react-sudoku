@@ -7,9 +7,9 @@ const apiEndpoint = "http://localhost:3000"
 fetch(apiEndpoint)
     .then(response => response.json())
     .then((json) => {
-        /* Easy puzzle to test completion
-        ReactDOM.render(
-            <Board puzzleId={json.puzzleId} squares={   
+        // Easy puzzle to test completion
+        /*ReactDOM.render(
+            <Board puzzleId={0} squares={   
               [[0,3,5,4,1,6,9,2,7],
               [2,9,6,8,5,7,4,3,1],
               [4,1,7,2,9,3,6,5,8],
@@ -23,7 +23,7 @@ fetch(apiEndpoint)
           ); */
 
         ReactDOM.render(
-            <Board puzzleId={json.puzzleId} squares={convertTo2DArray(json.puzzle)}/>,
+            <Board puzzleId={json.puzzle_id} squares={convertTo2DArray(json.puzzle)}/>,
               document.getElementById('root')
         );
     })
